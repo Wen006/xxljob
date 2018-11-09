@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xxl.job.admin.dao.XxlJobGroupDao">
+	
+	<resultMap id="XxlJobGroup" type="com.xxl.job.admin.core.model.XxlJobGroup" >
+		<result column="id" property="id" jdbcType="INTEGER"/>
+	    <result column="app_name" property="appName" jdbcType="VARCHAR"/>
+	    <result column="title" property="title" jdbcType="VARCHAR"/>
+	    <result column="qorder" property="order" jdbcType="INTEGER"/>
+		<result column="address_type" property="addressType" jdbcType="INTEGER"/>
+		<result column="address_list" property="addressList" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		t.id,
+		t.app_name,
+		t.title,
+		t.qorder,
+		t.address_type,
+		t.address_list
+	</sql>
+
+	<select id="findAll" resultMap="XxlJobGroup">
+		SELECT <include refid="Base_Column_List" />
+		FROM QRTZ_TRIGGER_GROUP  t
+		ORDER BY t.qorder ASC
+	</select>
+
+	<select id="findByAddressType" parameterType="java.lang.Integer" resultMap="XxlJobGroup">
+		SELECT <include refid="Base_Column_List" />
+		FROM QRTZ_TRIGGER_GROUP  t
+		WHERE t.address_type = #{addressType,jdbcType=INTEGER}
+		ORDER BY t.qorder ASC
+	</select>
+
+	<insert id="save" databaseId="oracle" parameterType="com.xxl.job.admin.core.model.XxlJobGroup" >
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="BEFORE">select seq.nextval from dual</selectKey>
+		INSERT INTO QRTZ_TRIGGER_GROUP (id, app_name, title, qorder, address_type, address_list)
+		values (#{id}, #{appName,jdbcType=VARCHAR}, #{title,jdbcType=INTEGER}, #{order,jdbcType=INTEGER}, #{addressType,jdbcType=INTEGER}, #{addressList,jdbcType=VARCHAR})
+	</insert>
+	
+	<insert id="save" databaseId="mysql" parameterType="com.xxl.job.admin.core.model.XxlJobGroup" useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO QRTZ_TRIGGER_GROUP ( `app_name`, `title`, `qorder`, `address_type`, `address_list`)
+		values ( #{appName}, #{title}, #{order}, #{addressType}, #{addressList});
+	</insert>
+
+	<update id="update" parameterType="com.xxl.job.admin.core.model.XxlJobGroup" >
+	    UPDATE QRTZ_TRIGGER_GROUP
+		SET 
+			app_name = #{appName,jdbcType=VARCHAR},
+			title = #{title,jdbcType=VARCHAR},
+			qorder = ${order},
+			address_type = #{addressType,jdbcType=INTEGER},
+			address_list = #{addressList,jdbcType=VARCHAR}
+		WHERE id = ${id}
+	</update>
+
+	<delete id="remove" parameterType="java.lang.Integer" >
+		DELETE FROM QRTZ_TRIGGER_GROUP
+		WHERE id = #{id}
+	</delete>
+
+	<select id="load" parameterType="java.lang.Integer" resultMap="XxlJobGroup">
+		SELECT <include refid="Base_Column_List" />
+		FROM QRTZ_TRIGGER_GROUP  t
+		WHERE t.id = #{id}
+	</select>
+
+</mapper>

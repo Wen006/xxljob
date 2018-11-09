@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xxl.job.admin.dao.XxlJobRegistryDao">
+	
+	<resultMap id="XxlJobRegistry" type="com.xxl.job.admin.core.model.XxlJobRegistry" >
+		<result column="id" property="id" />
+	    <result column="registry_group" property="registryGroup" />
+	    <result column="registry_key" property="registryKey" />
+	    <result column="registry_value" property="registryValue" />
+		<result column="update_time" property="updateTime" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		t.id,
+		t.registry_group,
+		t.registry_key,
+		t.registry_value,
+		t.update_time
+	</sql>
+	
+	<delete id="removeDead" databaseId="mysql" parameterType="java.lang.Integer" >
+		DELETE FROM QRTZ_TRIGGER_REGISTRY
+		WHERE update_time <![CDATA[ < ]]> DATE_ADD(NOW(),INTERVAL -#{timeout} SECOND)
+	</delete>
+	
+	<delete id="removeDead" databaseId="oracle" parameterType="java.lang.Integer">
+		DELETE FROM QRTZ_TRIGGER_REGISTRY
+		<!-- WHERE update_time <![CDATA[ < ]]> DATE_ADD(sysdate,INTERVAL -#{timeout} SECOND) -->
+		WHERE UPDATE_TIME <![CDATA[ < ]]> SYSDATE - #{timeout} / 24 / 60 / 60
+	</delete>
+
+	<select id="findAll" databaseId="mysql" parameterType="java.lang.Integer" resultMap="XxlJobRegistry">
+		SELECT <include refid="Base_Column_List" />
+		FROM QRTZ_TRIGGER_REGISTRY AS t
+		WHERE t.update_time <![CDATA[ > ]]> DATE_ADD(NOW(),INTERVAL -#{timeout} SECOND)
+	</select>
+	
+	<select id="findAll" databaseId="oracle" parameterType="java.lang.Integer" resultMap="XxlJobRegistry">
+		SELECT <include refid="Base_Column_List" />
+		FROM QRTZ_TRIGGER_REGISTRY  t
+		<!-- WHERE t.update_time <![CDATA[ > ]]> DATE_ADD(sysdate,INTERVAL -#{timeout} SECOND) -->
+		WHERE UPDATE_TIME <![CDATA[ > ]]> SYSDATE - #{timeout} / 24 / 60 / 60
+	</select>
+
+   <update id="registryUpdate" databaseId="mysql" >
+        UPDATE QRTZ_TRIGGER_REGISTRY
+        SET update_time = now()
+        WHERE registry_group = #{registryGroup}
+          AND registry_key = #{registryKey}
+          AND registry_value = #{registryValue}
+    </update>
+    
+    <update id="registryUpdate" databaseId="oracle" >
+        UPDATE QRTZ_TRIGGER_REGISTRY
+        SET update_time = sysdate
+        WHERE registry_group = #{registryGroup}
+          AND registry_key = #{registryKey}
+          AND registry_value = #{registryValue}
+    </update>
+    
+    <insert id="registrySave" databaseId="mysql">
+        INSERT INTO QRTZ_TRIGGER_REGISTRY( `registry_group` , `registry_key` , `registry_value`, `update_time`)
+        VALUES( #{registryGroup}  , #{registryKey} , #{registryValue}, NOW())
+    </insert>
+
+    <insert id="registrySave" databaseId="oracle">
+    	<selectKey resultType="java.lang.Integer" keyProperty="id" order="BEFORE">select seq.nextval from dual</selectKey>
+        INSERT INTO QRTZ_TRIGGER_REGISTRY( id,registry_group , registry_key , registry_value, update_time)
+        VALUES(#{id}, #{registryGroup}  , #{registryKey} , #{registryValue}, sysdate)
+    </insert>
+
+	<delete id="registryDelete" >
+		DELETE FROM QRTZ_TRIGGER_REGISTRY
+		WHERE registry_group = #{registryGroup}
+			AND registry_key = #{registryKey}
+			AND registry_value = #{registryValue}
+	</delete>
+
+</mapper>
