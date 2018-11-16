@@ -35,7 +35,7 @@
 	</select>
 
 	<insert id="save" databaseId="oracle" parameterType="com.xxl.job.admin.core.model.XxlJobGroup" >
-		<selectKey resultType="java.lang.Integer" keyProperty="id" order="BEFORE">select seq.nextval from dual</selectKey>
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="BEFORE">select XXL_JOB_SEQ.nextval from dual</selectKey>
 		INSERT INTO QRTZ_TRIGGER_GROUP (id, app_name, title, qorder, address_type, address_list)
 		values (#{id}, #{appName,jdbcType=VARCHAR}, #{title,jdbcType=INTEGER}, #{order,jdbcType=INTEGER}, #{addressType,jdbcType=INTEGER}, #{addressList,jdbcType=VARCHAR})
 	</insert>

@@ -44,7 +44,7 @@
 	</insert>
 	
 	<insert id="save" databaseId="oracle" parameterType="com.xxl.job.admin.core.model.XxlJobLogGlue" keyProperty="id" >
-		<selectKey resultType="java.lang.Integer" keyProperty="id" order="BEFORE">select seq.nextval from dual</selectKey>
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="BEFORE">select XXL_JOB_SEQ.nextval from dual</selectKey>
 		INSERT INTO QRTZ_TRIGGER_LOGGLUE (
 			id,
 			job_id,
