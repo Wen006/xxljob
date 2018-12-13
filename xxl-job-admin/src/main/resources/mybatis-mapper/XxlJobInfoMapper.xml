@@ -87,7 +87,7 @@
 			</trim>
 			ORDER BY tmp.id DESC
 		)t
-		where t.num between #{offset}*#{pagesize} and (#{offset}+1)*#{pagesize} 
+		where t.num > #{offset} and t.num &lt;= (#{offset}+#{pagesize}）
 	</select>
 	
 	<select id="pageListCount" parameterType="java.util.HashMap" resultType="int">
