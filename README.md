@@ -4,6 +4,9 @@
 - 支持 配置多数据源切换
 - 部分表名和表字段修改（oracle 表名字段长度限制）
 - 针对 其他系统嵌入job页面 做了安全处理
+- 处理后的数据库脚本 xxl-job-admin/src/main/resources/db/
+    - mysql
+    - oracle
 
 
 ```
